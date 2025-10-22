@@ -62,9 +62,9 @@ A quick look at the NeuraPixel AI web experience 👇
 
 💡 All screenshots are from the live NeuraPixel AI interface.
 
-🏗️ Project Structure
-csharp
-Copy code
+## 🏗️ Project Structure
+
+```
 neurapixel-ai/
 ├── app.py                 # Main Flask application
 ├── requirements.txt       # Python dependencies
@@ -72,7 +72,8 @@ neurapixel-ai/
 ├── static/                # CSS, JS, and assets
 ├── services/              # Backend services
 ├── generated_images/      # Generated image storage
-└── images_to_display/     # Website glimpses & sample images
+└── sample_images/         # Screenshots for README
+```
 🤝 Contributing
 We welcome contributions!
 
