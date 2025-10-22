@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuraPixel - AI Image Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vanta@latest/dist/vanta.net.min.js"></script>
+    <style>
+        #themeToggle:checked + label > div {
+            background-color: #7c3aed;
+        }
+        #themeToggle:checked + label > div > div {
+            transform: translateX(1.25rem);
+        }
+        .light-theme {
+            background-color: #f9fafb !important;
+            color: #111827 !important;
+        }
+        .light-theme nav {
+            background-color: rgba(255, 255, 255, 0.9) !important;
+            border-color: #e5e7eb !important;
+        }
+        .light-theme .bg-gray-800 {
+            background-color: rgba(255, 255, 255, 0.8) !important;
+        }
+        .light-theme .bg-gray-700 {
+            background-color: #f3f4f6 !important;
+        }
+        .light-theme .text-gray-300 {
+            color: #6b7280 !important;
+        }
+        .light-theme .border-gray-700 {
+            border-color: #e5e7eb !important;
+        }
+        .light-theme .border-gray-600 {
+            border-color: #d1d5db !important;
+        }
+        .dropdown-enter {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+        }
+        .dropdown-enter-active {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            transition: all 0.2s ease-out;
+        }
+        .dropdown-exit {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        .dropdown-exit-active {
+            opacity: 0;
+            transform: translateY(-10px) scale(0.95);
+            transition: all 0.15s ease-in;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex flex-col">
+    <nav class="bg-gray-800 bg-opacity-90 backdrop-blur-lg border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-2">
+                    <i data-feather="zap" class="text-purple-500"></i>
+                    <span class="text-xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+                        NeuraPixel AI
+                    </span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-lg hover:bg-gray-700">Home</a>
+                    <div class="relative">
+                        <button id="settingsBtn" class="text-gray-300 hover:text-white p-2 rounded-lg hover:bg-gray-700">
+                            <i data-feather="settings"></i>
+                        </button>
+                        <div id="settingsDropdown" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-lg border border-gray-700 z-50">
+                            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                                <i data-feather="user" class="mr-3 w-4 h-4"></i>
+                                Profile/Account
+                            </a>
+                            <div class="flex items-center justify-between px-4 py-3 text-gray-300" onclick="event.stopPropagation()">
+                                <div class="flex items-center">
+                                    <i data-feather="moon" class="mr-3 w-4 h-4"></i>
+                                    <span>Theme</span>
+                                </div>
+                                <div class="relative">
+                                    <input type="checkbox" id="themeToggle" class="sr-only">
+                                    <label for="themeToggle" class="flex items-center cursor-pointer">
+                                        <div class="relative w-10 h-5 bg-gray-600 rounded-full transition-colors duration-200">
+                                            <div class="absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 transform"></div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                                <i data-feather="clock" class="mr-3 w-4 h-4"></i>
+                                History
+                            </a>
+                            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                                <i data-feather="shield" class="mr-3 w-4 h-4"></i>
+                                Security
+                            </a>
+                            <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-700 hover:text-white border-t border-gray-700">
+                                <i data-feather="log-out" class="mr-3 w-4 h-4"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <div class="max-w-4xl mx-auto">
+            <div id="vanta-bg" class="absolute inset-0 -z-10"></div>
+            
+            <div class="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-xl p-6 shadow-2xl">
+                <h1 class="text-4xl font-bold mb-6 text-center bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent">
+                    <i data-feather="wand"></i> NeuraPixel AI
+                </h1>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Input Section -->
+                    <div class="space-y-6">
+                        <div class="form-group">
+                            <label class="block text-sm font-medium mb-2">Your Creative Prompt</label>
+                            <textarea id="prompt" rows="4" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Describe the image you want to generate..."></textarea>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium mb-2">Model</label>
+                                <select id="model" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <option value="flux">Flux</option>
+                                    <option value="turbo" selected>Turbo</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="block text-sm font-medium mb-2">Size</label>
+                                <select id="size" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500">
+                                    <option value="1024x1024">Square (1024x1024)</option>
+                                    <option value="1024x576" selected>Landscape (1024x576)</option>
+                                    <option value="576x1024">Portrait (576x1024)</option>
+                                    <option value="custom">Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="customSizeContainer" class="hidden grid grid-cols-2 gap-4">
+                            <div class="form-group">
+                                <label class="block text-sm font-medium mb-2">Width (px)</label>
+                                <input type="number" id="width" value="1024" min="256" max="2048" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="block text-sm font-medium mb-2">Height (px)</label>
+                                <input type="number" id="height" value="576" min="256" max="2048" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="block text-sm font-medium mb-2">Seed (optional)</label>
+                            <input type="number" id="seed" placeholder="Random seed for reproducible results" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        
+                        <button id="generateBtn" class="w-full py-3 px-6 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 rounded-lg font-semibold shadow-lg transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 flex items-center justify-center">
+                            <i data-feather="sparkles" class="mr-2"></i> Generate Image
+                        </button>
+                    </div>
+                    
+                    <!-- Output Section -->
+                    <div>
+                        <div id="outputContainer" class="border-2 border-dashed border-gray-600 rounded-xl p-4 min-h-64 flex items-center justify-center bg-gray-700 bg-opacity-50">
+                            <div id="placeholder" class="text-center text-gray-400">
+                                <i data-feather="image" class="w-12 h-12 mx-auto mb-2"></i>
+                                <p>Your generated image will appear here</p>
+                            </div>
+                            <div id="imageInfo" class="hidden w-full">
+                                <img id="generatedImage" class="w-full rounded-lg shadow-lg mb-4" src="" alt="Generated Image">
+                                <div class="text-sm text-gray-300 space-y-1">
+                                    <div class="flex justify-between">
+                                        <span>Filename:</span>
+                                        <span id="filename" class="font-mono"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>Generation Time:</span>
+                                        <span id="generationTime" class="font-mono"></span>
+                                    </div>
+                                    <div class="flex justify-between">
+                                        <span>File Size:</span>
+                                        <span id="fileSize" class="font-mono"></span>
+                                    </div>
+                                </div>
+                                <button id="downloadBtn" class="mt-4 w-full py-2 px-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-medium flex items-center justify-center">
+                                    <i data-feather="download" class="mr-2"></i> Download Image
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="loading" class="hidden mt-4">
+                            <div class="flex items-center justify-center space-x-2">
+                                <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse"></div>
+                                <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse delay-100"></div>
+                                <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse delay-200"></div>
+                                <div class="w-4 h-4 rounded-full bg-purple-500 animate-pulse delay-300"></div>
+                            </div>
+                            <p class="text-center mt-2 text-gray-400">Crafting your masterpiece with AI magic...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-800 bg-opacity-90 backdrop-blur-lg border-t border-gray-700 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-400">
+            <p>&copy; 2024 NeuraPixel AI. Powered by advanced AI technology.</p>
+        </div>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+    <script>
+        feather.replace();
+        VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0x7b46f5,
+            backgroundColor: 0x111827,
+            points: 10.00,
+            maxDistance: 22.00,
+            spacing: 18.00
+        });
+        
+        // Settings dropdown functionality
+        const settingsBtn = document.getElementById('settingsBtn');
+        const settingsDropdown = document.getElementById('settingsDropdown');
+        let isDropdownOpen = false;
+        
+        function showDropdown() {
+            settingsDropdown.classList.remove('hidden');
+            settingsDropdown.classList.add('dropdown-enter');
+            setTimeout(() => {
+                settingsDropdown.classList.remove('dropdown-enter');
+                settingsDropdown.classList.add('dropdown-enter-active');
+            }, 10);
+            isDropdownOpen = true;
+        }
+        
+        function hideDropdown() {
+            settingsDropdown.classList.remove('dropdown-enter-active');
+            settingsDropdown.classList.add('dropdown-exit-active');
+            setTimeout(() => {
+                settingsDropdown.classList.add('hidden');
+                settingsDropdown.classList.remove('dropdown-exit-active');
+            }, 150);
+            isDropdownOpen = false;
+        }
+        
+        settingsBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isDropdownOpen) {
+                hideDropdown();
+            } else {
+                showDropdown();
+            }
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            if (isDropdownOpen) {
+                hideDropdown();
+            }
+        });
+        
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        if (savedTheme === 'light') {
+            body.classList.add('light-theme');
+            themeToggle.checked = true;
+        }
+        
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                body.classList.add('light-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                body.classList.remove('light-theme');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+        
+        // Plan-based configuration
+        const urlParams = new URLSearchParams(window.location.search);
+        const plan = urlParams.get('plan');
+        const modelSelect = document.getElementById('model');
+        const sizeSelect = document.getElementById('size');
+        
+        if (plan) {
+            if (plan === 'free') {
+                // Free: only turbo model, only landscape size
+                modelSelect.innerHTML = '<option value="turbo">Turbo</option>';
+                sizeSelect.innerHTML = '<option value="1024x576">Landscape (1024x576)</option>';
+            } else if (plan === 'starter' || plan === 'pro') {
+                // Starter/Pro: only turbo model, all sizes
+                modelSelect.innerHTML = '<option value="turbo">Turbo</option>';
+            } else if (plan === 'premium') {
+                // Premium: all models and sizes (default)
+            }
+        }
+    </script>
+</body>
+</html>
