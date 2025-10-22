@@ -1,0 +1,9 @@
+Flask==2.3.3
+transformers==4.35.2
+diffusers==0.24.0
+torch==2.1.1
+torchvision==0.16.1
+Pillow==10.1.0
+accelerate==0.24.1
+safetensors==0.4.0
+xformers==0.0.22.post7
