@@ -21,31 +21,35 @@ A **modern AI-powered image generation web application** built with Flask and ad
    ```bash
    git clone https://github.com/yourusername/neurapixel-ai.git
    cd neurapixel-ai
-Install dependencies:
+   ```
 
-bash
-Copy code
-pip install -r requirements.txt
-Run the application:
+2. **Install dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-bash
-Copy code
-python app.py
-Open your browser and navigate to
-👉 http://localhost:5000
+3. **Run the application:**
+   ```bash
+   python app.py
+   ```
 
-💡 Usage
-Visit the landing page to explore features and pricing
+4. **Open your browser and navigate to:**
+   👉 http://localhost:5000
 
-Click “Get Started” on any pricing plan
+## 💡 Usage
+1. Visit the landing page to explore features and pricing
 
-Enter your creative prompt in the generator
+2. Click “Get Started” on any pricing plan
 
-Select model and size options based on your plan
+3. Enter your creative prompt in the generator
 
-Generate and download your AI-created images
+4. Select model and size options based on your plan
 
-🌆 Website Glimpses
+5. Generate and download your AI-created images
+
+---
+
+## 🌆 Website Glimpses
 A quick look at the NeuraPixel AI web experience 👇
 
 ### 🏠 Landing Page
@@ -74,16 +78,16 @@ neurapixel-ai/
 ├── generated_images/      # Generated image storage
 └── sample_images/         # Screenshots for README
 ```
-🤝 Contributing
+## 🤝 Contributing
 We welcome contributions!
 
-Fork the repository
+1. Fork the repository
 
-Create a feature branch
+2. Create a feature branch
 
-Make your changes
+3. Make your changes
 
-Submit a pull request
+4. Submit a pull request
 
-🪪 License
+## 🪪 License
 This project is licensed under the MIT License – feel free to use, modify, and share.
